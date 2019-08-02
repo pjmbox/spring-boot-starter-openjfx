@@ -44,13 +44,15 @@ public class SplashPreloader extends Preloader {
 	private Stage preloaderStage;
 	private ProgressBar progressBar;
 
-	protected Parent initRootNode(ProgressBar progressBar, Image image) {
+	protected Parent initRootNode() {
 		var bimg = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
 				BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
 		var default_borderstroke = new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
 				BorderWidths.DEFAULT);
+		progressBar = new ProgressBar(0);
+		progressBar.setMaxWidth(Double.MAX_VALUE);
 
-		var loading = new VBox(20);
+		var loading = new VBox(10);
 		loading.setMaxWidth(Region.USE_PREF_SIZE);
 		loading.setMaxHeight(Region.USE_PREF_SIZE);
 		loading.getChildren().add(progressBar);
@@ -71,9 +73,8 @@ public class SplashPreloader extends Preloader {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		progressBar = new ProgressBar(0);
 		loadImage();
-		var root = initRootNode(progressBar, image);
+		var root = initRootNode();
 		var scene = new Scene(root, Color.TRANSPARENT);
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
