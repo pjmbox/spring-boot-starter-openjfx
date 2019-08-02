@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Preloader;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -51,14 +52,17 @@ public class SplashPreloader extends Preloader {
 				BorderWidths.DEFAULT);
 		progressBar = new ProgressBar(0);
 		progressBar.setMaxWidth(Double.MAX_VALUE);
+		progressBar.setMaxHeight(8);
 
-		var loading = new VBox(10);
-		loading.setMaxWidth(Region.USE_PREF_SIZE);
-		loading.setMaxHeight(Region.USE_PREF_SIZE);
-		loading.getChildren().add(progressBar);
+		var loading = new VBox(2);
+		loading.setPadding(new Insets(0, 1, 1, 1));
+		loading.setMaxWidth(Region.USE_COMPUTED_SIZE);
+		loading.setMaxHeight(Region.USE_COMPUTED_SIZE);
 		loading.getChildren().add(new Label(text));
+		loading.getChildren().add(progressBar);
 
-		var root = new BorderPane(loading);
+		var root = new BorderPane();
+		root.setBottom(loading);
 		root.setBackground(new Background(bimg));
 		root.setBorder(new Border(default_borderstroke));
 
