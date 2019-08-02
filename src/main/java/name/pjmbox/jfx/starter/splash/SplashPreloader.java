@@ -82,8 +82,6 @@ public class SplashPreloader extends Preloader {
 		primaryStage.setHeight(image.getHeight());
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
-		primaryStage.show();
-
 		preloaderStage = primaryStage;
 	}
 
@@ -109,12 +107,13 @@ public class SplashPreloader extends Preloader {
 		switch (stateChangeNotification.getType()) {
 		case BEFORE_INIT:
 			progressBar.setProgress(0.1);
+			preloaderStage.show();
 			fadeScene(0, 0, 1, false);
 			break;
 		case BEFORE_LOAD:
 			break;
 		case BEFORE_START:
-			fadeScene(0.3, 1, 0, true);
+			fadeScene(1.0, 1, 0, true);
 			progressBar.setProgress(1);
 			break;
 		default:
