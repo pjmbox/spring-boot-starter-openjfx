@@ -1,7 +1,9 @@
 package name.pjmbox.jfx.starter;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.InputStream;
+
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import javafx.application.Application;
 import javafx.application.Preloader.ProgressNotification;
@@ -12,39 +14,44 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import name.pjmbox.jfx.starter.splash.SplashPreloader;
 
-public class AbstractSpringbootOpenjfxApplication extends Application {
+public class OpenjfxApplicationRunner extends Application {
 
 	private static final String JVM_PARAMETER_PRELOADER = "javafx.preloader";
+	private static Class<?> baseClass;
 	private static boolean isSplashEnabled = false;
 	private static String splashClassString = SplashPreloader.class.getName();
+	private static String styleString = Application.STYLESHEET_CASPIAN;
+	private static InputStream fxmlInputStream;
 
-	protected static void enableSplash(boolean enabled) {
+	public static void setBaseClass(Class<?> c) {
+		baseClass = c;
+	}
+	public static void enableSplash(boolean enabled) {
 		isSplashEnabled = enabled;
 	}
 
-	protected static void setSplashClass(Class<?> c) {
+	public static void setSplashClass(Class<?> c) {
 		splashClassString = c.getName();
 	}
 
-	public static void main(String[] args) {
+	public static void setFxmlInputStream(InputStream is) {
+		fxmlInputStream = is;
+	}
+
+	public static void setApplicationStyle(String style) {
+		styleString = style;
+	}
+
+	public static void run(String[] args) {
 		if (isSplashEnabled) {
 			System.setProperty(JVM_PARAMETER_PRELOADER, splashClassString);
 		}
 		launch(args);
 	}
 
-	@Autowired
-	protected FxmlLoaderFactory fxmlLoaderFactory;
-	protected String fxmlPath = "";
-	protected String styleString = Application.STYLESHEET_CASPIAN;
 	private Scene scene;
 
-	private AbstractSpringbootOpenjfxApplication(String fxmlPath) {
-		this.fxmlPath = fxmlPath;
-	}
-
-	protected void setApplicationStyle(String style) {
-		this.styleString = style;
+	public OpenjfxApplicationRunner() {
 	}
 
 	protected void setProgress(double p) {
@@ -55,21 +62,22 @@ public class AbstractSpringbootOpenjfxApplication extends Application {
 
 	@Override
 	public void init() throws Exception {
-		setProgress(0.2);
-		SpringApplication.run(getClass());
-
-		setProgress(0.3);
 		Application.setUserAgentStylesheet(styleString);
+		setProgress(0.2);
 
-		setProgress(0.4);
+		ConfigurableApplicationContext ctx = SpringApplication.run(baseClass);
+		setProgress(0.3);
+
+
+		var fxmlLoaderFactory = new FxmlLoaderFactory();
+		fxmlLoaderFactory.setApplicationContext(ctx);
 		var fxmlLoader = fxmlLoaderFactory.getFXMLLoader();
+		setProgress(0.4);
 
+		var root = (Parent) fxmlLoader.load(fxmlInputStream);
 		setProgress(0.5);
-		var root = (Parent) fxmlLoader.load(getClass().getResourceAsStream(fxmlPath));
 
-		setProgress(0.6);
 		scene = new Scene(root);
-
 		setProgress(0.9);
 	}
 

@@ -29,11 +29,12 @@ import javafx.util.Duration;
 
 public class SplashPreloader extends Preloader {
 
-	private static String imagePath = "/images/splash.png";
+	private static final String imagePath = "/starter-images/splash.jpg";
+	private static Image image = null;
 	private static String text = "please wait...";
 
-	public static void setImagePath(String v) {
-		imagePath = v;
+	public static void setImage(Image v) {
+		image = v;
 	}
 
 	public static void setText(String v) {
@@ -62,17 +63,23 @@ public class SplashPreloader extends Preloader {
 		return root;
 	}
 
+	protected void loadImage() {
+		if (image == null) {
+			image = new Image(getClass().getResourceAsStream(imagePath));
+		}
+	}
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		progressBar = new ProgressBar(0);
-		var img = new Image(getClass().getResourceAsStream(imagePath));
-		var root = initRootNode(progressBar, img);
+		loadImage();
+		var root = initRootNode(progressBar, image);
 		var scene = new Scene(root, Color.TRANSPARENT);
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setAlwaysOnTop(true);
-		primaryStage.setWidth(img.getWidth());
-		primaryStage.setHeight(img.getHeight());
+		primaryStage.setWidth(image.getWidth());
+		primaryStage.setHeight(image.getHeight());
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
 		primaryStage.show();
