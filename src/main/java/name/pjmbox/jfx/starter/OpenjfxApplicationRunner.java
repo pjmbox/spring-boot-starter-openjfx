@@ -68,14 +68,17 @@ public class OpenjfxApplicationRunner extends Application {
 		ConfigurableApplicationContext ctx = SpringApplication.run(baseClass);
 		setProgress(0.3);
 
-
 		var fxmlLoaderFactory = new FxmlLoaderFactory();
-		fxmlLoaderFactory.setApplicationContext(ctx);
-		var fxmlLoader = fxmlLoaderFactory.getFXMLLoader();
 		setProgress(0.4);
 
-		var root = (Parent) fxmlLoader.load(fxmlInputStream);
+		fxmlLoaderFactory.setApplicationContext(ctx);
 		setProgress(0.5);
+
+		var fxmlLoader = fxmlLoaderFactory.getFXMLLoader();
+		setProgress(0.6);
+
+		var root = (Parent) fxmlLoader.load(fxmlInputStream);
+		setProgress(0.7);
 
 		scene = new Scene(root);
 		setProgress(0.9);
