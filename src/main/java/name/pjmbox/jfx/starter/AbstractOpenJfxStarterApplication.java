@@ -7,7 +7,7 @@ import name.pjmbox.jfx.starter.splash.SplashPreloader;
 
 public abstract class AbstractOpenJfxStarterApplication {
 
-	protected static void setFxmlInputStream(InputStream inputStream) {
+	protected static void setRootFxmlInputStream(InputStream inputStream) {
 		OpenjfxApplicationRunner.setFxmlInputStream(inputStream);
 	}
 
@@ -17,6 +17,10 @@ public abstract class AbstractOpenJfxStarterApplication {
 
 	protected static void setSplashText(String text) {
 		SplashPreloader.setText(text);
+	}
+
+	protected static void setSplashAlwaysOnTop(boolean v) {
+		SplashPreloader.setAlwaysOnTop(v);
 	}
 
 	protected static void enableSplash(boolean v) {
@@ -29,6 +33,10 @@ public abstract class AbstractOpenJfxStarterApplication {
 
 	protected static void setApplicationStyle(String v) {
 		OpenjfxApplicationRunner.setApplicationStyle(v);
+	}
+
+	protected static void setApplicationName(String n) {
+		OpenjfxApplicationRunner.setApplicationName(n);
 	}
 
 	public static void run(Class<?> baseClass, String[] args) {

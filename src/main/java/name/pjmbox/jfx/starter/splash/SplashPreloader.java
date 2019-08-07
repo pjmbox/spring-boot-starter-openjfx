@@ -33,6 +33,7 @@ public class SplashPreloader extends Preloader {
 	private static final String imagePath = "/starter-images/splash.jpg";
 	private static Image image = null;
 	private static String text = "please wait...";
+	private static boolean isAlwayOnTop = true;
 
 	public static void setImage(Image v) {
 		image = v;
@@ -40,6 +41,10 @@ public class SplashPreloader extends Preloader {
 
 	public static void setText(String v) {
 		text = v;
+	}
+
+	public static void setAlwaysOnTop(boolean v) {
+		isAlwayOnTop = v;
 	}
 
 	private Stage preloaderStage;
@@ -82,7 +87,7 @@ public class SplashPreloader extends Preloader {
 		var scene = new Scene(root, Color.TRANSPARENT);
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setAlwaysOnTop(true);
+		primaryStage.setAlwaysOnTop(isAlwayOnTop);
 		primaryStage.setWidth(image.getWidth());
 		primaryStage.setHeight(image.getHeight());
 		primaryStage.setScene(scene);

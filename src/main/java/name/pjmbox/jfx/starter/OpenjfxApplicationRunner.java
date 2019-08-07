@@ -19,6 +19,7 @@ public class OpenjfxApplicationRunner extends Application {
 	private static final String JVM_PARAMETER_PRELOADER = "javafx.preloader";
 	private static Class<?> baseClass;
 	private static boolean isSplashEnabled = false;
+	private static String appName;
 	private static String splashClassString = SplashPreloader.class.getName();
 	private static String styleString = Application.STYLESHEET_CASPIAN;
 	private static InputStream fxmlInputStream;
@@ -42,9 +43,19 @@ public class OpenjfxApplicationRunner extends Application {
 		styleString = style;
 	}
 
+	public static void setApplicationName(String n) {
+		appName = n;
+	}
+
 	public static void run(String[] args) {
 		if (isSplashEnabled) {
 			System.setProperty(JVM_PARAMETER_PRELOADER, splashClassString);
+		}
+		if (appName != null) {
+			// TODO: 设置Macos菜单的app名字，似乎不成功，留待以后解决。
+			System.setProperty("dock:name", appName);
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
 		}
 		launch(args);
 	}
