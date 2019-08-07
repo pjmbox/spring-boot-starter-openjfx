@@ -12,16 +12,67 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class BeanHost<T> {
 
+	protected String prefix;
 	protected T beanInst;
 	protected ConcurrentHashMap<String, Property<?>> hostMap;
 
-	public BeanHost(T bean) {
+	public BeanHost(T bean, String prefix) throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		this.prefix = prefix == null ? "" : prefix + "_";
 		beanInst = bean;
 		hostMap = new ConcurrentHashMap<String, Property<?>>();
+		createBindProperties();
+		updateBindProperties();
+	}
+
+	public BeanHost(T bean) throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		prefix = "";
+		beanInst = bean;
+		hostMap = new ConcurrentHashMap<String, Property<?>>();
+		createBindProperties();
+		updateBindProperties();
+	}
+
+	public T getBean() {
+		return beanInst;
+	}
+
+	public void setBean(T t) {
+		beanInst = t;
+	}
+
+	protected void createBindProperties() throws NoSuchFieldException, SecurityException {
+		for (Field field : beanInst.getClass().getDeclaredFields()) {
+			hostMap.put(prefix + field.getName(), createBindProperty(field.getName()));
+		}
+	}
+
+	protected Property<?> createBindProperty(String name) throws NoSuchFieldException, SecurityException {
+		Field f = beanInst.getClass().getDeclaredField(name);
+		if (f.getType() == String.class) {
+			return new SimpleStringProperty();
+		} else if (f.getType() == Integer.class) {
+			return new SimpleIntegerProperty();
+		} else if (f.getType() == Float.class) {
+			return new SimpleFloatProperty();
+		}
+		throw new InvalidParameterException(String.format("the class %s is not supported.", f.getType().getName()));
+	}
+
+	public void updateBindProperties() {
+		for (Field field : beanInst.getClass().getDeclaredFields()) {
+			field.setAccessible(true);
+			try {
+				updateBindProperty(beanInst, field);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	protected void updateBindProperty(T bean, Field field) throws IllegalArgumentException, IllegalAccessException {
-		Property<?> bindProperty = hostMap.get(field.getName());
+		Property<?> bindProperty = hostMap.get(prefix + field.getName());
 		if (field.getType() == String.class) {
 			var a = (SimpleStringProperty) bindProperty;
 			a.setValue((String) field.get(bean));
@@ -34,44 +85,27 @@ public class BeanHost<T> {
 		}
 	}
 
-	public void updateBean(T bean) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
-			SecurityException, InvocationTargetException, NoSuchMethodException {
+	public void updateBeanMembers() {
 		for (Field field : beanInst.getClass().getDeclaredFields()) {
 			field.setAccessible(true);
-			if (hostMap.containsKey(field.getName())) {
-				updateBindProperty(bean, field);
+			Property<?> bindProperty = hostMap.get(prefix + field.getName());
+			try {
+				field.set(beanInst, bindProperty.getValue());
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
-	public Property<?> getProperty(String name) {
-		return hostMap.get(name);
+	@SuppressWarnings("unchecked")
+	public <S> Property<S> getProperty(S s, String fieldName) {
+		return (Property<S>) hostMap.get(fieldName);
 	}
 
-	protected Property<?> createBindProperty(String name) throws NoSuchFieldException, SecurityException {
-		Field f = beanInst.getClass().getDeclaredField(name);
-		if (f.getType() == String.class) {
-			return new SimpleStringProperty();
-		}
-		else if (f.getType() == Integer.class) {
-			return new SimpleIntegerProperty();
-		}
-		else if (f.getType() == Float.class) {
-			return new SimpleFloatProperty();
-		}
-		throw new InvalidParameterException(String.format("the class %s is not supported.", f.getType().getName()));
-	}
-
-	public void bindBean(String name, Property<?> controlProperty)
+	public void bindBean(String fieldName, Property<?> controlProperty)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			SecurityException, NoSuchMethodException, NoSuchFieldException {
-		Property<?> bindProperty;
-		if (hostMap.containsKey(name)) {
-			bindProperty = hostMap.get(name);
-		} else {
-			bindProperty = createBindProperty(name);
-			hostMap.put(name, bindProperty);
-		}
+		Property<?> bindProperty = hostMap.get(fieldName);
 		var field = bindProperty.getClass().getMethod("bindBidirectional", Property.class);
 		field.invoke(bindProperty, controlProperty);
 	}

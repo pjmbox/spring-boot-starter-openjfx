@@ -43,8 +43,8 @@ abstract public class AbstractOpenJfxController implements ApplicationContextAwa
 	@FXML
 	private void initialize() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException, IOException {
-		controlInitialize();
 		bindBean();
+		controlInitialize();
 	}
 
 	protected Property<?> getCtrlProperty(Node n) {
@@ -58,10 +58,10 @@ abstract public class AbstractOpenJfxController implements ApplicationContextAwa
 	protected void bindBean() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 		for (final var f : getClass().getDeclaredFields()) {
-			if (f.isAnnotationPresent(BeanBindTag.class)) {
+			if (f.isAnnotationPresent(BeanHostTag.class)) {
 				f.setAccessible(true);
-				BeanBindTag bb = f.getAnnotation(BeanBindTag.class);
-				BeanHost<?> bbh = (BeanHost<?>) context.getBean(bb.BinderName());
+				BeanHostTag bb = f.getAnnotation(BeanHostTag.class);
+				BeanHost<?> bbh = (BeanHost<?>) context.getBean(bb.value());
 				bbh.bindBean(f.getName(), getCtrlProperty((Node) f.get(this)));
 			}
 		}
