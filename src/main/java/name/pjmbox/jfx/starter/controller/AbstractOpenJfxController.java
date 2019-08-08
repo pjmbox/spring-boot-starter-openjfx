@@ -52,7 +52,7 @@ abstract public class AbstractOpenJfxController implements ApplicationContextAwa
 			return ((TextField) n).textProperty();
 		}
 		throw new InvalidParameterException(
-				String.format("class, %s does not support property binding.", n.getClass().getName()));
+				String.format("this type %s is supporting property binding.", n.getClass().getName()));
 	}
 
 	protected void bindBean() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
@@ -62,7 +62,7 @@ abstract public class AbstractOpenJfxController implements ApplicationContextAwa
 				f.setAccessible(true);
 				BeanHostTag bb = f.getAnnotation(BeanHostTag.class);
 				BeanHost<?> bbh = (BeanHost<?>) context.getBean(bb.value());
-				bbh.bindBean(f.getName(), getCtrlProperty((Node) f.get(this)));
+				bbh.bindProperty(f.getName(), getCtrlProperty((Node) f.get(this)));
 			}
 		}
 	}
