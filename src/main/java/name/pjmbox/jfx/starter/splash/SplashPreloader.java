@@ -30,7 +30,7 @@ import javafx.util.Duration;
 
 public class SplashPreloader extends Preloader {
 
-	private static final String imagePath = "/starter-images/splash.jpg";
+	private static final String imagePath = "/starter-images/splash.png";
 	private static Image image = null;
 	private static String text = "please wait...";
 	private static boolean isAlwayOnTop = true;
